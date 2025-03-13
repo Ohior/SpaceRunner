@@ -1,5 +1,7 @@
 package org.spacerunner.game.game_object
 
+import ohior.app.pear.utils.PearVector
+
 enum class PearCollision {
     TOP,
     BOTTOM,

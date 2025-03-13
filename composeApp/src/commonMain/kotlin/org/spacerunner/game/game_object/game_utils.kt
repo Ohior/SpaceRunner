@@ -1,27 +1,25 @@
 package org.spacerunner.game.game_object
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.ImageBitmap
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import ohior.app.pear.utils.PearVector
 
-data class PearVector(
-    val x: Float,
-    val y: Float,
-    val width: Float,
-    val height: Float
-) {
-    fun toOffset() = Offset(x, y)
-    fun toSize() = Size(width, height)
-    companion object{
-        val Zero = PearVector(0f, 0f, 0f, 0f)
-    }
-}
+//data class PearVector(
+//    val x: Float,
+//    val y: Float,
+//    val width: Float,
+//    val height: Float
+//) {
+//    fun toOffset() = Offset(x, y)
+//    fun toSize() = Size(width, height)
+//    companion object{
+//        val Zero = PearVector(0f, 0f, 0f, 0f)
+//    }
+//}
 
 abstract class PearGameObject(
     private val pearVector: PearVector,

@@ -1,17 +1,16 @@
 package ohior.app.pearplatform
 
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.Size
 
 enum class PearPlatformType {
     ANDROID, DESKTOP, IOS, WEB
 }
 
-data class PearPlatform(
-    val name: PearPlatformType,
-    val size: Size,
+data class PearWindowSize(
+    val defaultSize: Size,
     val maxSize: Size
 )
 
-@Composable
-expect fun getPearPlatform(): PearPlatform
+expect fun getPearPlatform(): PearPlatformType
+
+expect fun getPearWindowSize(): PearWindowSize
