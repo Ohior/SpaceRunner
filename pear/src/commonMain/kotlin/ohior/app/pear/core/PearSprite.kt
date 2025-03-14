@@ -3,67 +3,45 @@ package ohior.app.pear.core
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import ohior.app.pear.utils.PearVector
 
 
 abstract class PearSprite(
-    vector: PearVector,
+    pearVector: PearVector,
     bitmap: ImageBitmap,
 ) {
-    var pearOffset by mutableStateOf(vector)
+    var pearOffset by mutableStateOf(pearVector)
         private set
     val pearBitmap = bitmap
-
-
-    fun move(x: Float = 0f, y: Float = 0f) {
-        pearOffset = pearOffset.offsetBy(Offset(x, y))
-    }
-
-    fun setPearVector(x: Float = 0f, y: Float = 0f) {
-        pearOffset = pearOffset.copy(x = x, y = y)
-    }
-
-    fun cleanup() {}
+    abstract suspend fun update()
 }
 
 abstract class PearSprites(
     vector: PearVector,
-    bitmaps: List<ImageBitmap>,
+    private val bitmaps: List<ImageBitmap>
 ) {
     var pearOffset by mutableStateOf(vector)
         private set
     var pearBitmap by mutableStateOf(bitmaps[0])
         private set
-    private val scope = CoroutineScope(Dispatchers.Main)
 
-    init {
-        scope.launch {
+    abstract suspend fun update(other: PearVector)
+
+    fun animateFlow(): Flow<ImageBitmap> {
+        return flow {
             var counter = 0
             while (true) {
-                pearBitmap = bitmaps[counter]
                 delay(100)
                 counter++
                 if (counter >= bitmaps.size) {
                     counter = 0
                 }
+                emit(bitmaps[counter])
             }
         }
-    }
-
-    fun cleanup() {}
-    fun move(x: Float = 0f, y: Float = 0f) {
-        pearOffset = pearOffset.offsetBy(Offset(x, y))
-    }
-
-    abstract fun update()
-
-    fun setPearVector(x: Float = 0f, y: Float = 0f) {
-        pearOffset = pearOffset.copy(x = x, y = y)
     }
 }

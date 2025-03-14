@@ -19,9 +19,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import ohior.app.pear.core.PearSprites
+import ohior.app.pear.utils.PearCollision
 import ohior.app.pear.utils.PearVector
+import ohior.app.pear.utils.collideWith
 import ohior.app.pearplatform.getPearWindowSize
 import org.jetbrains.compose.resources.imageResource
+import org.spacerunner.game.utils.BehaviorState
 import spacerunner.composeapp.generated.resources.Res
 import spacerunner.composeapp.generated.resources.crab1
 import spacerunner.composeapp.generated.resources.crab2
@@ -31,7 +35,7 @@ import spacerunner.composeapp.generated.resources.crab5
 import spacerunner.composeapp.generated.resources.crab6
 
 class Crab(vector: PearVector, bitmaps: List<ImageBitmap>) :
-    PearGameObject(vector, bitmaps) {
+    PearSprites(vector, bitmaps) {
 
     private val crabBitmap = animateFlow().stateIn(
         CoroutineScope(Dispatchers.Main),
@@ -47,10 +51,11 @@ class Crab(vector: PearVector, bitmaps: List<ImageBitmap>) :
         when (behaviorState) {
             BehaviorState.RUNNING -> {
                 pearVector = pearVector.copy(x = pearVector.x - 10)
-                if (pearVector.x+pearVector.width < 0f){
+                if (pearVector.x + pearVector.width < 0f) {
                     pearVector = pearVector.copy(x = wSize.maxSize.width)
                 }
             }
+
             BehaviorState.JUMPING -> Unit
             BehaviorState.FALLING -> {
                 force += 1
@@ -59,9 +64,10 @@ class Crab(vector: PearVector, bitmaps: List<ImageBitmap>) :
             }
         }
         when (pearVector.collideWith(other)) {
-            PearCollision.BOTTOM -> {
+            is PearCollision.Bottom -> {
                 behaviorState = BehaviorState.RUNNING
             }
+
             else -> Unit
         }
     }

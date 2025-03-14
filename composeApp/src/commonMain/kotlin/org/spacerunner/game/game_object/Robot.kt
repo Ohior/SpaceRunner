@@ -17,9 +17,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import ohior.app.pear.core.PearSprites
+import ohior.app.pear.utils.PearCollision
 import ohior.app.pear.utils.PearVector
-import ohior.app.pearplatform.getPearWindowSize
+import ohior.app.pear.utils.collideWith
 import org.jetbrains.compose.resources.imageResource
+import org.spacerunner.game.utils.BehaviorState
 import spacerunner.composeapp.generated.resources.Res
 import spacerunner.composeapp.generated.resources.robot1
 import spacerunner.composeapp.generated.resources.robot2
@@ -30,7 +33,7 @@ import spacerunner.composeapp.generated.resources.robot6
 import spacerunner.composeapp.generated.resources.robot7
 
 class Robot(vector: PearVector, bitmaps: List<ImageBitmap>) :
-    PearGameObject(vector, bitmaps) {
+    PearSprites(vector, bitmaps) {
 
     private val robotBitmap = animateFlow().stateIn(
         CoroutineScope(Dispatchers.Main),
@@ -38,7 +41,6 @@ class Robot(vector: PearVector, bitmaps: List<ImageBitmap>) :
         bitmaps.first()
     )
 
-    private var wSize = getPearWindowSize()
 
     private var behaviorState = BehaviorState.FALLING
     var pearVector by mutableStateOf(vector)
@@ -67,7 +69,7 @@ class Robot(vector: PearVector, bitmaps: List<ImageBitmap>) :
             }
         }
         when (pearVector.collideWith(other)) {
-            PearCollision.BOTTOM -> {
+            is PearCollision.Bottom -> {
                 behaviorState = BehaviorState.RUNNING
             }
 

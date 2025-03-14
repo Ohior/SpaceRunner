@@ -5,7 +5,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import kotlin.math.abs
 
 
 data class PearVector(
@@ -27,5 +26,9 @@ data class PearVector(
     fun toDpOffset() = DpOffset(x.dp, y.dp)
 
     fun toDpSize() = DpSize(width.dp, height.dp)
+
+    companion object{
+        val Zero = PearVector(0f, 0f, 0f, 0f)
+    }
 }
 

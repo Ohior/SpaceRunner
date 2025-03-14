@@ -1,11 +1,9 @@
 package org.spacerunner.game.screens.level1
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -33,6 +31,8 @@ object Level1Screen : Screen {
         val windowSize = getPearWindowSize()
         val robot = viewmodel.getRobot()
         val enemyCrab = viewmodel.getCrab()
+        val ground = viewmodel.getGround()
+        val bullet = viewmodel.getBullet()
 
 
         Scaffold { pv ->
@@ -45,21 +45,16 @@ object Level1Screen : Screen {
                         size = windowSize.maxSize
                     ),
                 onUpdate = {
-                    robot.update(viewmodel.ground.groundVector)
-                    enemyCrab.update(viewmodel.ground.groundVector)
+                    robot.update(ground.groundVector)
+                    enemyCrab.update(ground.groundVector)
+                    bullet.update()
                 },
                 onContent = {
                     robot.DrawRobot()
                     enemyCrab.DrawCrab()
-                    Box(
-                        Modifier
-                            .offset(
-                                viewmodel.ground.groundVector.x.dp,
-                                viewmodel.ground.groundVector.y.dp
-                            )
-                            .size(viewmodel.ground.groundVector.width.dp)
-                            .background(Color(74, 6, 1))
-                    )
+                    ground.DrawGround()
+                    bullet.DrawBullets(Modifier)
+
                     // JUMP BUTTON
                     Box(
                         Modifier
@@ -78,17 +73,16 @@ object Level1Screen : Screen {
                             .border(width = 3.dp, color = Color.Black, shape = CircleShape)
                             .clip(CircleShape)
                             .clickable {
-                                viewmodel.bullets.add(
+                                bullet.bullets.add(
                                     PearVector(
-                                        robot.pearVector.x,
-                                        robot.pearVector.y - (robot.pearVector.height / 3),
+                                        robot.pearVector.x + (robot.pearVector.width / 2),
+                                        robot.pearVector.y + (robot.pearVector.height / 3),
                                         10f,
                                         10f,
                                         "bullet"
                                     )
                                 )
                             })
-                    viewmodel.DrawBullets(Modifier)
                 }
             )
         }
