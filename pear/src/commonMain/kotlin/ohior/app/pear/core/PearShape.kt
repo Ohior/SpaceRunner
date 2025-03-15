@@ -9,5 +9,5 @@ abstract class PearShape(vector: PearVector) {
     var pearOffset by mutableStateOf(vector)
         private set
 
-    abstract fun update()
+    abstract fun update(pearVectors:List<PearVector>)
 }

@@ -17,19 +17,19 @@ abstract class PearSprite(
     var pearOffset by mutableStateOf(pearVector)
         private set
     val pearBitmap = bitmap
-    abstract suspend fun update()
+    abstract suspend fun update(pearVectors: List<PearVector>)
 }
 
 abstract class PearSprites(
     vector: PearVector,
     private val bitmaps: List<ImageBitmap>
 ) {
-    var pearOffset by mutableStateOf(vector)
-        private set
+//    var pearOffset by mutableStateOf(vector)
+//        private set
     var pearBitmap by mutableStateOf(bitmaps[0])
         private set
 
-    abstract suspend fun update(other: PearVector)
+    abstract suspend fun update(pearVectors: List<PearVector>)
 
     fun animateFlow(): Flow<ImageBitmap> {
         return flow {

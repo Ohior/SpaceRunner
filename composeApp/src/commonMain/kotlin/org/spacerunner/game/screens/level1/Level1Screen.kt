@@ -45,9 +45,12 @@ object Level1Screen : Screen {
                         size = windowSize.maxSize
                     ),
                 onUpdate = {
-                    robot.update(ground.groundVector)
-                    enemyCrab.update(ground.groundVector)
-                    bullet.update()
+                    robot.update(listOf(enemyCrab.crabVector, ground.groundVector))
+                    enemyCrab.update(listOf(
+                        ground.groundVector,
+                        robot.robotVector,
+                    ).plus(bullet.bullets))
+                    bullet.update(listOf(enemyCrab.crabVector))
                 },
                 onContent = {
                     robot.DrawRobot()
@@ -75,8 +78,8 @@ object Level1Screen : Screen {
                             .clickable {
                                 bullet.bullets.add(
                                     PearVector(
-                                        robot.pearVector.x + (robot.pearVector.width / 2),
-                                        robot.pearVector.y + (robot.pearVector.height / 3),
+                                        robot.robotVector.x + (robot.robotVector.width / 2),
+                                        robot.robotVector.y + (robot.robotVector.height / 3),
                                         10f,
                                         10f,
                                         "bullet"

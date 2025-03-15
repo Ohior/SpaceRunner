@@ -1,7 +1,7 @@
 package org.spacerunner.game.game_object
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -10,17 +10,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.toIntSize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import ohior.app.pear.core.PearSprites
-import ohior.app.pear.utils.PearCollision
 import ohior.app.pear.utils.PearVector
 import ohior.app.pear.utils.collideWith
 import ohior.app.pearplatform.getPearWindowSize
@@ -43,16 +40,18 @@ class Crab(vector: PearVector, bitmaps: List<ImageBitmap>) :
         bitmaps.first()
     )
     private var wSize = getPearWindowSize()
+    private var hits = 9
+    private var borderColor by mutableStateOf(Color.Green)
     private var behaviorState = BehaviorState.FALLING
-    private var pearVector by mutableStateOf(vector)
+    var crabVector by mutableStateOf(vector)
     private var force: Float = 0f
 
-    override suspend fun update(other: PearVector) {
+    override suspend fun update(pearVectors: List<PearVector>) {
         when (behaviorState) {
             BehaviorState.RUNNING -> {
-                pearVector = pearVector.copy(x = pearVector.x - 10)
-                if (pearVector.x + pearVector.width < 0f) {
-                    pearVector = pearVector.copy(x = wSize.maxSize.width)
+                crabVector = crabVector.copy(x = crabVector.x - 10)
+                if (crabVector.x + crabVector.width < 0f) {
+                    crabVector = crabVector.copy(x = wSize.maxSize.width)
                 }
             }
 
@@ -60,15 +59,24 @@ class Crab(vector: PearVector, bitmaps: List<ImageBitmap>) :
             BehaviorState.FALLING -> {
                 force += 1
                 if (force > 10) force = 10f
-                pearVector = pearVector.copy(y = pearVector.y + force)
+                crabVector = crabVector.copy(y = crabVector.y + force)
             }
         }
-        when (pearVector.collideWith(other)) {
-            is PearCollision.Bottom -> {
-                behaviorState = BehaviorState.RUNNING
+        val collisions = crabVector.collideWith(pearVectors)
+        if (collisions.any { it.tag.lowercase() == "ground" }){
+            behaviorState = BehaviorState.RUNNING
+        }
+        if (collisions.any { it.tag.lowercase() == "bullet" }){
+            hits -= 1
+            if (hits/3 == 2) borderColor = Color.Yellow
+            else if (hits/3 == 1) borderColor = Color.Red
+            if (hits <= 0) {
+                crabVector = crabVector.copy(y = 200f)
+                behaviorState = BehaviorState.FALLING
+                hits = 9
+                crabVector = crabVector.copy(x = wSize.maxSize.width, y = wSize.maxSize.height-300)
+                borderColor = Color.Green
             }
-
-            else -> Unit
         }
     }
 
@@ -76,17 +84,13 @@ class Crab(vector: PearVector, bitmaps: List<ImageBitmap>) :
     @Composable
     fun DrawCrab() {
         val rb = crabBitmap.collectAsState()
-        Box(
-            Modifier
-                .offset(pearVector.x.dp, pearVector.y.dp)
-                .size(pearVector.width.dp)
-                .drawBehind {
-                    drawImage(
-                        rb.value,
-                        dstSize = pearVector.toSize().toIntSize()
-                    )
-                }
-                .border(width = 1.dp, color = Color.Red)
+        Image(
+            bitmap = rb.value,
+            contentDescription = "Crab",
+            modifier = Modifier
+                .offset(crabVector.x.dp, crabVector.y.dp)
+                .size(crabVector.width.dp)
+                .border(width = 1.dp, color = borderColor)
         )
     }
 

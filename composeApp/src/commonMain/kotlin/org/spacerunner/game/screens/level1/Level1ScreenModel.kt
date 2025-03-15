@@ -32,7 +32,7 @@ class Level1ScreenModel : ScreenModel {
 
     @Composable
     fun getRobot() = Robot(
-        PearVector(100f, 100f, 100f, 100f, "robot"),
+        PearVector(windowSize.maxSize.width/5, 100f, 100f, 100f, "robot"),
         Robot.robotBitmaps
     )
 

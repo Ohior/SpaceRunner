@@ -6,7 +6,9 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import ohior.app.pear.core.PearShape
+import ohior.app.pear.utils.PearCollisionState
 import ohior.app.pear.utils.PearVector
+import ohior.app.pear.utils.collideWithList
 import ohior.app.pearplatform.getPearWindowSize
 
 class Bullet(
@@ -15,14 +17,20 @@ class Bullet(
     val bullets = mutableStateListOf<PearVector>()
     private val windowSize = getPearWindowSize()
 
-    override fun update() {
+    override fun update(pearVectors: List<PearVector>) {
         val tempBullets = mutableListOf<PearVector>()
-        for(index in bullets.indices){
+        for (index in bullets.indices) {
             bullets[index] = bullets[index].copy(x = bullets[index].x + 10)
-            if (bullets[index].x > windowSize.maxSize.width) tempBullets.add(bullets[index])
+            val col = bullets[index].collideWithList(pearVectors)
+            if (
+                (bullets[index].x > windowSize.maxSize.width) ||
+                (col.state != PearCollisionState.NONE)
+            ) tempBullets.add(bullets[index])
         }
+
         bullets.removeAll(tempBullets)
     }
+
     @Composable
     fun DrawBullets(modifier: Modifier) {
         bullets.forEach { b ->

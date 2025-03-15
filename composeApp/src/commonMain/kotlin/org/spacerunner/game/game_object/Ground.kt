@@ -13,14 +13,15 @@ import ohior.app.pear.utils.PearVector
 
 class Ground(
     vector: PearVector,
-):PearShape(vector) {
+) : PearShape(vector) {
     var groundVector = vector
         private set
 
-    override fun update() {
+    override fun update(pearVectors: List<PearVector>) {
     }
+
     @Composable
-    fun DrawGround(){
+    fun DrawGround() {
         Box(
             Modifier
                 .offset(

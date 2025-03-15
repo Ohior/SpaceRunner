@@ -18,7 +18,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import ohior.app.pear.core.PearSprites
-import ohior.app.pear.utils.PearCollision
 import ohior.app.pear.utils.PearVector
 import ohior.app.pear.utils.collideWith
 import org.jetbrains.compose.resources.imageResource
@@ -43,14 +42,14 @@ class Robot(vector: PearVector, bitmaps: List<ImageBitmap>) :
 
 
     private var behaviorState = BehaviorState.FALLING
-    var pearVector by mutableStateOf(vector)
+    var robotVector by mutableStateOf(vector)
     private var force: Float = 0f
 
-    override suspend fun update(other: PearVector) {
+    override suspend fun update(pearVectors: List<PearVector>) {
         when (behaviorState) {
             BehaviorState.RUNNING -> {
-                if (pearVector.x + (pearVector.width * 2) > pearVector.width)
-                    pearVector = pearVector.copy(x = pearVector.x - 1)
+//                if (robotVector.x + (robotVector.width * 2) > robotVector.width)
+//                    robotVector = robotVector.copy(x = robotVector.x - 1)
             }
 
             BehaviorState.JUMPING -> {
@@ -59,28 +58,29 @@ class Robot(vector: PearVector, bitmaps: List<ImageBitmap>) :
                     force = 0f
                     behaviorState = BehaviorState.FALLING
                 }
-                pearVector = pearVector.copy(x = pearVector.x + 5, y = pearVector.y - force)
+                robotVector = robotVector.copy(y = robotVector.y - force)
             }
 
             BehaviorState.FALLING -> {
-                force += 1
+                force += 2
                 if (force > 10) force = 10f
-                pearVector = pearVector.copy(x = pearVector.x + 3, y = pearVector.y + force)
+                robotVector = robotVector.copy(y = robotVector.y + force)
             }
         }
-        when (pearVector.collideWith(other)) {
-            is PearCollision.Bottom -> {
-                behaviorState = BehaviorState.RUNNING
-            }
-
-            else -> Unit
+        val collisions = robotVector.collideWith(pearVectors)
+        if (collisions.any { it.tag.lowercase() == "ground" }){
+            behaviorState = BehaviorState.RUNNING
+        }
+        if (collisions.any { it.tag.lowercase() == "crab" }){
+            robotVector = robotVector.copy(y = 100f)
+            behaviorState = BehaviorState.FALLING
         }
     }
 
     fun jump() {
         if (behaviorState == BehaviorState.RUNNING) {
             behaviorState = BehaviorState.JUMPING
-            force = 40f
+            force = 50f
         }
     }
 
@@ -92,8 +92,8 @@ class Robot(vector: PearVector, bitmaps: List<ImageBitmap>) :
             bitmap = rb.value,
             contentDescription = "Robot",
             modifier = Modifier
-                .offset(pearVector.x.dp, pearVector.y.dp)
-                .size(pearVector.width.dp)
+                .offset(robotVector.x.dp, robotVector.y.dp)
+                .size(robotVector.width.dp)
                 .border(width = 1.dp, color = Color.Red)
         )
     }
