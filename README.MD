@@ -95,8 +95,7 @@ Space Runner is licensed under the **MIT License**.
 
 ## Support
 
-If you encounter any issues or have questions, please open an issue on
-the [GitHub repository](https://github.com/your-repo/space-runner/issues). We'll be happy to help!
+If you encounter any issues or have questions, please open an issue.
 
 ---
 Enjoy playing **Space Runner**! May your robot survive the bug invasion and achieve the highest
